@@ -29,12 +29,38 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           env:
-            - name: KAFKA_BROKERCONNECT
-              value: {{ include "kafdrop.kafka.bootstrapServers" . | quote }}
             - name: SCHEMAREGISTRY_CONNECT
               value: {{ include "kafdrop.schema-registry.url" . | quote }}
+            - name: KAFKA_BROKERCONNECT
+              value: "{{ .Values.kafka.brokerConnect }}"
+            - name: KAFKA_PROPERTIES
+              value: "{{ .Values.kafka.properties }}"
+            - name: KAFKA_TRUSTSTORE
+              value: "{{ .Values.kafka.truststore }}"
+            - name: KAFKA_KEYSTORE
+              value: "{{ .Values.kafka.keystore }}"
             - name: JVM_OPTS
-              value: {{ .Values.heapOpts  | quote}}
+              value: "{{ .Values.jvm.opts }}"
+            - name: JMX_PORT
+              value: "{{ .Values.jmx.port }}"
+            - name: SERVER_SERVLET_CONTEXTPATH
+              value: "{{ .Values.server.servlet.contextPath | trimSuffix "/" }}"
+            - name: HOST
+              value: "{{ .Values.host }}"
+            - name: KAFKA_PROPERTIES_FILE
+              value: "{{ .Values.kafka.propertiesFile }}"
+            - name: KAFKA_TRUSTSTORE_FILE
+              value: "{{ .Values.kafka.truststoreFile }}"
+            - name: KAFKA_KEYSTORE_FILE
+              value: "{{ .Values.kafka.keystoreFile }}"
+            - name: SERVER_PORT
+              value: "{{ .Values.server.port }}"
+            - name: CMD_ARGS
+  {{- if .Values.mountProtoDesc.enabled }}
+              value: "--message.format=PROTOBUF --protobufdesc.directory=/protodesc/ {{ .Values.cmdArgs }}"
+  {{- else }}
+              value: "{{ .Values.cmdArgs }}"
+  {{- end }}
           ports:
             - name: tcp
               containerPort: {{ .Values.service.port }}

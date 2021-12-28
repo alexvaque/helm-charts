@@ -18,18 +18,33 @@ replicaCount: 1
 
 ## Kafdrop Configuration
 ## ref: https://docs.confluent.io/platform/current/connect/references/allconfigs.html
-heapOpts: -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0
+jvm:
+  opts: "-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+jmx:
+  port: 8686
+
+server:
+  port: 9000
+  servlet:
+    contextPath: /
+
 service:
   type: NodePort
   port: 9000
   nodePort: 30900
 
-  ## Kafka Cluster Configuration
+## Kafka Cluster Configuration
 kafka:
   ## If true, kafka was installed under the same umbrella
   enabled: true
-  ## If outside or custom kafka a bootstrap server is required
-  bootstrapServers: ks-kafka-headless:9092
+  brokerConnect: localhost:9092
+  properties: ""
+  truststore: ""
+  keystore: ""
+  # I found permission problems in the root folder
+  propertiesFile: "/tmp/kafka.properties"
+  truststoreFile: "/tmp/kafka.truststore.jks"
+  keystoreFile: "/tmp/kafka.keystore.jks"  
 
 ## Schema Registry Configuration
 schema-registry:
@@ -80,3 +95,7 @@ resources:
   requests:
     cpu: 100m
     memory: 220Mi
+
+mountProtoDesc:
+  enabled: false
+  hostPath:
